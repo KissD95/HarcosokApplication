@@ -35,9 +35,6 @@ namespace HarcosokApplication
             return this.nev;
         }
 
-        public static explicit operator Kepesseg(ListBox.ObjectCollection v)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

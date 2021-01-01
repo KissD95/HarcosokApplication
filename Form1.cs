@@ -22,7 +22,8 @@ namespace HarcosokApplication
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //------------------------KAPCSOLAT LÉREHOZÁSA-----------------------------------------------
+            //------------------------------------------------KAPCSOLAT LÉREHOZÁSA-----------------------------------------------
+
             MySqlConnectionStringBuilder sb = new MySqlConnectionStringBuilder();
             sb.Server = "localhost";
             sb.UserID = "root";
@@ -45,7 +46,7 @@ namespace HarcosokApplication
           
             
         }
-
+        //--------------------------------------Harcos Combobox és Listbox frissítése---------------------------------------------
         private void HarcosokListaUpdate()
         {
             harcosokListBox.Items.Clear();
@@ -62,7 +63,7 @@ namespace HarcosokApplication
         }
 
 
-        //-------------------HARCOS LÉTREHOZÁSA--------------------------------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------HARCOS LÉTREHOZÁSA---------------------------------------------------------------------------------
         private void LetrehozButton_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(harcosNeveTextBox.Text)) { 
@@ -85,7 +86,7 @@ namespace HarcosokApplication
             }
             HarcosokListaUpdate();
         }
-        //-----------------KÉPESSÉG HOZZÁADÁSA--------------------------------------------------------------------------
+        //-----------------KÉPESSÉG HOZZÁADÁSA--------------------------------------------------------------------------------------------------
         private void HozzaadButton_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(kepessegNeveTextBox.Text) || !string.IsNullOrWhiteSpace(leirasTextBox.Text))
@@ -111,28 +112,43 @@ namespace HarcosokApplication
             }
         }
 
-     //-------------HARCOS TÖRLÉSE-------------------------------------------------------------------------
-
-        private void HarcosTorlesButton_Click(object sender, EventArgs e)
+    
+        //------------------------- képességek listázása harcosra kattintva-------------------------------------------------------------------------
+        private void HarcosokListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (harcosokListBox.SelectedIndex < 0)
             {
-                MessageBox.Show("Nincs kiválasztott ügyfél!");
-                return;
-            }
-            Harcos kiv = (Harcos)harcosokListBox.SelectedItem;
+                MessageBox.Show("Harcosra kattintson!");
+            }else
+            {
+                kepessegekListBox.Items.Clear();
+                kepessegLeirasTextBox.Text = "";
+                Harcos kiv = (Harcos)harcosokListBox.SelectedItem;
+                sql.CommandText = "SELECT `id`,`nev`,`leiras`,`harcos_id` FROM `kepessegek` WHERE harcos_id='" + kiv.Id + "'";
+                using (MySqlDataReader dr = sql.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        kepessegekListBox.Items.Add(new Kepesseg(dr.GetInt32("id"), dr.GetString("nev"), dr.GetString("leiras"), dr.GetInt32("harcos_id")));
 
-            sql.CommandText = "delete from harcosok where id='"+kiv.Id+"'";
-            if (sql.ExecuteNonQuery() == 1)
-            {
-                harcosokListBox.Items.RemoveAt(harcosokListBox.SelectedIndex);
-                hasznaloComboBox.Items.RemoveAt(harcosokListBox.SelectedIndex);
-                MessageBox.Show("Sikeres törlés");
+                    }
+                }
             }
-            else
+           
+
+        }
+        //-----------------------------------------Képessége leírás megejelnítés képességre kattintva-----------------------------------------------
+        private void KepessegekListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (kepessegekListBox.SelectedIndex < 0)
             {
-                MessageBox.Show("A törlés sikertelen!");
+                MessageBox.Show("Képességre kattintson!");
+            }else
+            {
+                Kepesseg kep = (Kepesseg)kepessegekListBox.SelectedItem;
+                kepessegLeirasTextBox.Text = kep.Leiras;
             }
+           
         }
     }
 }
