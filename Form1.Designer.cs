@@ -48,6 +48,7 @@
             this.modositButton = new System.Windows.Forms.Button();
             this.torlesButton = new System.Windows.Forms.Button();
             this.kepessegLeirasTextBox = new System.Windows.Forms.TextBox();
+            this.harcosTorlesButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -201,7 +202,7 @@
             this.harcosokListBox.Name = "harcosokListBox";
             this.harcosokListBox.Size = new System.Drawing.Size(220, 228);
             this.harcosokListBox.TabIndex = 5;
-            this.harcosokListBox.SelectedIndexChanged += new System.EventHandler(this.HarcosokListBox_SelectedIndexChanged);
+            
             // 
             // kepessegekListBox
             // 
@@ -223,7 +224,7 @@
             // 
             // torlesButton
             // 
-            this.torlesButton.Location = new System.Drawing.Point(290, 516);
+            this.torlesButton.Location = new System.Drawing.Point(251, 514);
             this.torlesButton.Name = "torlesButton";
             this.torlesButton.Size = new System.Drawing.Size(75, 23);
             this.torlesButton.TabIndex = 9;
@@ -238,11 +239,22 @@
             this.kepessegLeirasTextBox.Size = new System.Drawing.Size(301, 116);
             this.kepessegLeirasTextBox.TabIndex = 10;
             // 
+            // harcosTorlesButton
+            // 
+            this.harcosTorlesButton.Location = new System.Drawing.Point(23, 515);
+            this.harcosTorlesButton.Name = "harcosTorlesButton";
+            this.harcosTorlesButton.Size = new System.Drawing.Size(75, 23);
+            this.harcosTorlesButton.TabIndex = 11;
+            this.harcosTorlesButton.Text = "Törlés";
+            this.harcosTorlesButton.UseVisualStyleBackColor = true;
+            this.harcosTorlesButton.Click += new System.EventHandler(this.HarcosTorlesButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 556);
+            this.Controls.Add(this.harcosTorlesButton);
             this.Controls.Add(this.kepessegLeirasTextBox);
             this.Controls.Add(this.torlesButton);
             this.Controls.Add(this.modositButton);
@@ -287,6 +299,7 @@
         private System.Windows.Forms.Button modositButton;
         private System.Windows.Forms.Button torlesButton;
         private System.Windows.Forms.TextBox kepessegLeirasTextBox;
+        private System.Windows.Forms.Button harcosTorlesButton;
     }
 }
 

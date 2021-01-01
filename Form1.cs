@@ -111,17 +111,27 @@ namespace HarcosokApplication
             }
         }
 
-        private void HarcosokListBox_SelectedIndexChanged(object sender, EventArgs e)
+     //-------------HARCOS TÖRLÉSE-------------------------------------------------------------------------
+
+        private void HarcosTorlesButton_Click(object sender, EventArgs e)
         {
-            Harcos kiv = (Harcos)harcosokListBox.SelectedItem;
-            
-            sql.CommandText = "SELECT 'nev','leiras' FROM kepessegek WHERE harcos_id='" + kiv.Id + "'";
-            using (MySqlDataReader dr = sql.ExecuteReader())
+            if (harcosokListBox.SelectedIndex < 0)
             {
-                while (dr.Read())
-                {
-                    kepessegekListBox.Items.Add(kiv.Id);
-                }
+                MessageBox.Show("Nincs kiválasztott ügyfél!");
+                return;
+            }
+            Harcos kiv = (Harcos)harcosokListBox.SelectedItem;
+
+            sql.CommandText = "delete from harcosok where id='"+kiv.Id+"'";
+            if (sql.ExecuteNonQuery() == 1)
+            {
+                harcosokListBox.Items.RemoveAt(harcosokListBox.SelectedIndex);
+                hasznaloComboBox.Items.RemoveAt(harcosokListBox.SelectedIndex);
+                MessageBox.Show("Sikeres törlés");
+            }
+            else
+            {
+                MessageBox.Show("A törlés sikertelen!");
             }
         }
     }
