@@ -116,7 +116,7 @@ namespace HarcosokApplication
         //-----------------KÉPESSÉG HOZZÁADÁSA--------------------------------------------------------------------------------------------------
         private void HozzaadButton_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(kepessegNeveTextBox.Text) || !string.IsNullOrWhiteSpace(leirasTextBox.Text))
+            if (!string.IsNullOrWhiteSpace(kepessegNeveTextBox.Text) && !string.IsNullOrWhiteSpace(leirasTextBox.Text) || hasznaloComboBox.SelectedIndex>0)
             {
                 sql.CommandText = "INSERT INTO kepessegek (nev,leiras,harcos_id) VALUES ('"+kepessegNeveTextBox.Text.Trim()+"','"+leirasTextBox.Text+"',(SELECT id FROM harcosok WHERE nev='"+hasznaloComboBox.SelectedItem+"'))";
                 try
@@ -132,12 +132,15 @@ namespace HarcosokApplication
                 }
                 catch (MySqlException ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show("Válasszon ki melyik harcoshoz kíván hozzáadni!");
                 }
             }
-            else
+            else if(string.IsNullOrWhiteSpace(kepessegNeveTextBox.Text))
             {
-                MessageBox.Show("Kötelező kitölteni a név és a leírás mezőket!");
+                MessageBox.Show("Kötelező megadni képesség nevet!");
+            }else if(string.IsNullOrWhiteSpace(kepessegLeirasTextBox.Text))
+            {
+                MessageBox.Show("Kőtelező képesség leírást megadni!");
             }
         }
 
@@ -146,6 +149,7 @@ namespace HarcosokApplication
         //------------------------- képességek listázása harcosra kattintva-------------------------------------------------------------------------
         private void KepessegListaUpdate()
         {
+
             kepessegekListBox.Items.Clear();
             kepessegLeirasTextBox.Text = "";
             Harcos kiv = (Harcos)harcosokListBox.SelectedItem;
@@ -227,6 +231,26 @@ namespace HarcosokApplication
                 }
             }
             
+        }
+
+        private void HarcosTorlesButton_Click(object sender, EventArgs e)
+        {
+            if (harcosokListBox.SelectedIndex < 0)
+            {
+                MessageBox.Show("Nincs kiválasztva harcos!");
+                return;
+            }
+            Harcos kivKep = (Harcos)harcosokListBox.SelectedItem;
+            sql.CommandText = "delete from harcosok where id=" + kivKep.Id;
+            if (sql.ExecuteNonQuery() == 1)
+            {
+                HarcosokListaUpdate();
+                MessageBox.Show("Sikeres törlés");
+            }
+            else
+            {
+                MessageBox.Show("A törlés sikertelen!");
+            }
         }
     }
 }
