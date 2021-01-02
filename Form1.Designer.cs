@@ -221,6 +221,7 @@
             this.modositButton.TabIndex = 8;
             this.modositButton.Text = "Módósít";
             this.modositButton.UseVisualStyleBackColor = true;
+            this.modositButton.Click += new System.EventHandler(this.ModositButton_Click);
             // 
             // torlesButton
             // 
@@ -230,6 +231,7 @@
             this.torlesButton.TabIndex = 9;
             this.torlesButton.Text = "Törlés";
             this.torlesButton.UseVisualStyleBackColor = true;
+            this.torlesButton.Click += new System.EventHandler(this.TorlesButton_Click);
             // 
             // kepessegLeirasTextBox
             // 

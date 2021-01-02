@@ -42,10 +42,37 @@ namespace HarcosokApplication
                 MessageBox.Show(ex.Message);
                 return;
             }
+
+            TablakLetrehozasa();
             HarcosokListaUpdate();
           
             
         }
+        //--------------------------TÁBLÁK LÉTREHOZÁSA-----------------------------------------------------------------
+        private void TablakLetrehozasa()
+        {
+            sql.CommandText = @"CREATE TABLE IF NOT EXISTS harcosok(" +
+                "id INTEGER PRIMARY KEY AUTO_INCREMENT, " +
+                "nev VARCHAR(32) NOT NULL, " +
+                "letrehozas VARCHAR(32) NOT NULL" +
+                ")";
+            sql.ExecuteNonQuery();
+
+            sql.CommandText = @"CREATE TABLE IF NOT EXISTS kepessegek(" +
+                "id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
+                "nev VARCHAR(32) NOT NULL, " +
+                "leiras VARCHAR(128) NOT NULL, " +
+                "harcos_id INTEGER NOT NULL" +
+                ")";
+            sql.ExecuteNonQuery();
+
+            sql.CommandText = @"ALTER TABLE kepessegek
+                ADD FOREIGN KEY (harcos_id)
+                REFERENCES harcosok(id)";
+            sql.ExecuteNonQuery();
+
+        }
+
         //--------------------------------------Harcos Combobox és Listbox frissítése---------------------------------------------
         private void HarcosokListaUpdate()
         {
@@ -94,8 +121,10 @@ namespace HarcosokApplication
                 sql.CommandText = "INSERT INTO kepessegek (nev,leiras,harcos_id) VALUES ('"+kepessegNeveTextBox.Text.Trim()+"','"+leirasTextBox.Text+"',(SELECT id FROM harcosok WHERE nev='"+hasznaloComboBox.SelectedItem+"'))";
                 try
                 {
+
                     if (sql.ExecuteNonQuery() == 1)
                     {
+                        KepessegListaUpdate();
                         kepessegNeveTextBox.Text = "";
                         leirasTextBox.Text = "";
                         MessageBox.Show("Képesség sikeresen hozzáadva");
@@ -112,8 +141,25 @@ namespace HarcosokApplication
             }
         }
 
+
     
         //------------------------- képességek listázása harcosra kattintva-------------------------------------------------------------------------
+        private void KepessegListaUpdate()
+        {
+            kepessegekListBox.Items.Clear();
+            kepessegLeirasTextBox.Text = "";
+            Harcos kiv = (Harcos)harcosokListBox.SelectedItem;
+            sql.CommandText = "SELECT `id`,`nev`,`leiras`,`harcos_id` FROM `kepessegek` WHERE harcos_id='" + kiv.Id + "'";
+            using (MySqlDataReader dr = sql.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    kepessegekListBox.Items.Add(new Kepesseg(dr.GetInt32("id"), dr.GetString("nev"), dr.GetString("leiras"), dr.GetInt32("harcos_id")));
+
+                }
+            }
+        }
+
         private void HarcosokListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (harcosokListBox.SelectedIndex < 0)
@@ -121,18 +167,7 @@ namespace HarcosokApplication
                 MessageBox.Show("Harcosra kattintson!");
             }else
             {
-                kepessegekListBox.Items.Clear();
-                kepessegLeirasTextBox.Text = "";
-                Harcos kiv = (Harcos)harcosokListBox.SelectedItem;
-                sql.CommandText = "SELECT `id`,`nev`,`leiras`,`harcos_id` FROM `kepessegek` WHERE harcos_id='" + kiv.Id + "'";
-                using (MySqlDataReader dr = sql.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        kepessegekListBox.Items.Add(new Kepesseg(dr.GetInt32("id"), dr.GetString("nev"), dr.GetString("leiras"), dr.GetInt32("harcos_id")));
-
-                    }
-                }
+                KepessegListaUpdate();
             }
            
 
@@ -149,6 +184,49 @@ namespace HarcosokApplication
                 kepessegLeirasTextBox.Text = kep.Leiras;
             }
            
+        }
+        //--------------------------KÉPESSÉG TÖRLÉSE---------------------------------------------------------------------
+        private void TorlesButton_Click(object sender, EventArgs e)
+        {
+            if (kepessegekListBox.SelectedIndex < 0)
+            {
+                MessageBox.Show("Nincs kiválasztva képesség!");
+                return;
+            }
+            Kepesseg kivKep = (Kepesseg)kepessegekListBox.SelectedItem;
+            sql.CommandText = "delete from kepessegek where id=" +kivKep.Id ;
+            if (sql.ExecuteNonQuery() == 1)
+            {
+                KepessegListaUpdate();
+                MessageBox.Show("Sikeres törlés");
+            }
+            else
+            {
+                MessageBox.Show("A törlés sikertelen!");
+            }
+            
+        }
+        //----------------------------------------------KÉPESSÉG LEÍRÁS MÓDOSÍTÁSA-------------------------------------------------------------------
+        private void ModositButton_Click(object sender, EventArgs e)
+        {
+            Kepesseg kivKep = (Kepesseg)kepessegekListBox.SelectedItem;
+            if (kepessegekListBox.SelectedIndex < 0)
+            {
+                MessageBox.Show("Válasszon ki egy képességet a módosításhoz!");
+            }else
+            {
+                sql.CommandText = "UPDATE kepessegek SET leiras='" + kepessegLeirasTextBox.Text + "' WHERE id=" + kivKep.Id;
+                if (sql.ExecuteNonQuery() == 1)
+                {
+
+                    MessageBox.Show("Módosítás sikeres");
+                }
+                else
+                {
+                    MessageBox.Show("A módosítás sikertelen");
+                }
+            }
+            
         }
     }
 }
